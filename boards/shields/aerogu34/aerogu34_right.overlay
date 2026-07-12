@@ -33,6 +33,17 @@
     axis-snap-threshold = <200>;
 };
 
+/* Auto-mouse-layer is now handled by mouse_runtime_input_processor itself
+ * (temp-layer-* properties below), instead of a separate static
+ * &zip_temp_layer node. This makes it editable from DYA Studio at runtime
+ * (enable/disable, target layer, activation/deactivation delay). */
+&mouse_runtime_input_processor {
+    temp-layer-enabled;
+    temp-layer = <4>;                          /* Mouse layer */
+    temp-layer-activation-delay-ms = <0>;      /* activate immediately on movement */
+    temp-layer-deactivation-delay-ms = <1000>; /* same 1s timeout as before */
+};
+
 / {
     deadzone_processor: deadzone_processor {
         compatible = "zmk,input-processor-deadzone";
@@ -45,16 +56,17 @@
         compatible = "zmk,input-listener";
         device = <&trackball>;
         /* Chain order:
-         *   deadzone  - filter sub-threshold noise
-         *   xy_transform - invert both axes (sensor-mounting orientation)
-         *   mouse_runtime - DYA Studio runtime config (CPI / snipe / etc)
-         *   temp_layer 4 1000ms - auto-enable Mouse layer (4) on movement,
-         *     turn back off after 1s of trackball inactivity
-         *   scroll_runtime - convert XY -> scroll on layer 3 only */
+         *   deadzone      - filter sub-threshold noise
+         *   xy_transform  - invert both axes (sensor-mounting orientation)
+         *   mouse_runtime - DYA Studio runtime config (CPI / snipe / temp-layer / etc)
+         *   scroll_runtime - convert XY -> scroll on layer 3 only
+         *
+         * NOTE: the old static "&zip_temp_layer 4 1000" entry has been
+         * removed; auto-mouse-layer is now configured on
+         * mouse_runtime_input_processor above so it's Studio-editable. */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &mouse_runtime_input_processor
-                            &zip_temp_layer 4 1000
                             &scroll_runtime_input_processor>;
     };
 };
