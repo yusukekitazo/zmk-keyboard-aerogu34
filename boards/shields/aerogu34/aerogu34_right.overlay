@@ -28,7 +28,7 @@
     x-codes = <INPUT_REL_X>;
     y-codes = <INPUT_REL_Y>;
     xy-to-scroll-enabled;
-    active-layers = <8>;  /* BIT(3) = layer 3 (Scroll) */
+    active-layers = <32>;  /* BIT(5) = layer 5 (SCROLL) */
     axis-snap-mode = <AXIS_SNAP_MODE_Y>;
     axis-snap-threshold = <200>;
 };
@@ -39,7 +39,7 @@
  * (enable/disable, target layer, activation/deactivation delay). */
 &mouse_runtime_input_processor {
     temp-layer-enabled;
-    temp-layer = <4>;                          /* Mouse layer */
+    temp-layer = <1>;                          /* MOUSE layer (index1) */
     temp-layer-activation-delay-ms = <0>;      /* activate immediately on movement */
     temp-layer-deactivation-delay-ms = <1000>; /* same 1s timeout as before */
 };
