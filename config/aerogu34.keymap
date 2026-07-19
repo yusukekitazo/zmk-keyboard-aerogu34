@@ -6,6 +6,7 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/pointing.h>
+#include <mouse-gesture.dtsi>
 
 // OS設定を日本語キーボードのまま使用するための変換定義
 
@@ -98,6 +99,17 @@
         esc {
             bindings = <&kp ESCAPE>;
             key-positions = <28 29>;
+        };
+
+        /* K+L held: activates trackball gesture recognition
+         * (Alt+Left/Right/Q/W without pressing them, via ball movement).
+         * timeout/require-prior-idle mirror the Bt/scroll mode-switch combos
+         * to avoid misfiring while typing normal K/L characters. */
+        mouse_gesture_activate {
+            bindings = <&mouse_gesture>;
+            key-positions = <17 18>;
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
         };
     };
 
