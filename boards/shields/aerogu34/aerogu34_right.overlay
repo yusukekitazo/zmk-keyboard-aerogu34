@@ -34,18 +34,16 @@
     axis-snap-threshold = <200>;
 };
 
-/* Auto-mouse-layer is now handled by mouse_runtime_input_processor itself
- * (temp-layer-* properties below), instead of a separate static
- * &zip_temp_layer node. This makes it editable from DYA Studio at runtime
- * (enable/disable, target layer, activation/deactivation delay).
+/* AML (auto-mouse-layer) reverted to the static zip_temp_layer processor.
+ * cormoran's mouse_runtime_input_processor's temp-layer feature does NOT
+ * support excluded-positions / require-prior-idle-ms (confirmed by build
+ * error: "'excluded-positions' ... is not declared in 'properties:' in
+ * zmk,input-processor-runtime.yaml"), so it can't do typing-misfire
+ * prevention. This trades away Studio-runtime-editability of the AML
+ * layer/timeout for correct exclusion behavior.
  *
- * excluded-positions / require-prior-idle-ms: トラボ誤爆防止。
- * J/K/Lをタイプした直後300ms以内はAMLが発動しない。 */
-&mouse_runtime_input_processor {
-    temp-layer-enabled;
-    temp-layer = <1>;                          /* MOUSE layer (index1) */
-    temp-layer-activation-delay-ms = <0>;      /* activate immediately on movement */
-    temp-layer-deactivation-delay-ms = <1000>; /* same 1s timeout as before */
+ * J/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。 */
+&zip_temp_layer {
     excluded-positions = <
         16 // J
         17 // K
@@ -100,16 +98,21 @@
          *   xy_transform  - invert both axes (sensor-mounting orientation)
          *   mouse_gesture - active only while K+L combo held; suppresses
          *                   movement downstream during an active gesture
-         *   mouse_runtime - DYA Studio runtime config (CPI / snipe / temp-layer / etc)
+         *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
+         *                   excludes J/K/L with 300ms prior-idle requirement
          *   scroll_runtime - convert XY -> scroll on layer 5 only
          *
-         * NOTE: the old static "&zip_temp_layer 4 1000" entry has been
-         * removed; auto-mouse-layer is now configured on
-         * mouse_runtime_input_processor above so it's Studio-editable. */
+         * NOTE: mouse_runtime_input_processor removed from this chain;
+         * its only role here (temp-layer) doesn't support the exclusion
+         * feature we need, so AML moved back to the static zip_temp_layer
+         * node above. If mouse_runtime_input_processor also configures
+         * something else (e.g. CPI/snipe) elsewhere in Studio, let me know
+         * and I'll add it back alongside zip_temp_layer instead of in
+         * place of it. */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &zip_mouse_gesture
-                            &mouse_runtime_input_processor
+                            &zip_temp_layer 1 1000
                             &scroll_runtime_input_processor>;
     };
 };
