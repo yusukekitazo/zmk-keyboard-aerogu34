@@ -55,7 +55,9 @@
  * also move the cursor/scroll underneath. Normal trackball use (no combo
  * held) is completely unaffected.
  *
- * 矢印の向きと一致させる: 右に転がす→進む、左に転がす→戻る。 */
+ * 矢印の向きと一致: 右に転がす→進む、左に転がす→戻る。
+ * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。上下のapp-switchは
+ * 発火しなかったため、tab切り替えに変更。 */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
@@ -71,14 +73,14 @@
         bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
     };
 
-    app_switch_up {
+    tab_next {
         pattern = <GESTURE_UP>;
-        bindings = <&kp LA(Q)>;            /* Alt+Q: app switch */
+        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: next tab */
     };
 
-    app_switch_down {
+    tab_prev {
         pattern = <GESTURE_DOWN>;
-        bindings = <&kp LA(W)>;            /* Alt+W: app switch */
+        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: previous tab */
     };
 };
 
