@@ -6,6 +6,12 @@ config ZMK_SPLIT
 config NFCT_PINS_AS_GPIOS
     default y
 
+config BT_BAS
+    default y
+
+config ZMK_BATTERY_REPORTING
+    default y
+
 endif
 
 if SHIELD_AEROGU34_RIGHT
@@ -14,6 +20,12 @@ config ZMK_KEYBOARD_NAME
     default "Aerogu34"
 
 config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_FETCHING
+    default y
+
+config ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_PROXY
     default y
 
 endif
