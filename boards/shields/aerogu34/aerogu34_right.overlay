@@ -36,11 +36,9 @@
 
 /* AML (auto-mouse-layer) reverted to the static zip_temp_layer processor.
  * cormoran's mouse_runtime_input_processor's temp-layer feature does NOT
- * support excluded-positions / require-prior-idle-ms (confirmed by build
- * error: "'excluded-positions' ... is not declared in 'properties:' in
- * zmk,input-processor-runtime.yaml"), so it can't do typing-misfire
- * prevention. This trades away Studio-runtime-editability of the AML
- * layer/timeout for correct exclusion behavior.
+ * support excluded-positions / require-prior-idle-ms, so it can't do
+ * typing-misfire prevention. AML layer/timeout are build-time fixed
+ * (not Studio-editable) as a result -- confirmed not needed.
  *
  * J/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。 */
 &zip_temp_layer {
@@ -55,20 +53,22 @@
 /* Mouse gesture: activated only while the K+L combo (keymap.keymap) is
  * held. Movement IS suppressed while active, so gesture strokes don't
  * also move the cursor/scroll underneath. Normal trackball use (no combo
- * held) is completely unaffected. */
+ * held) is completely unaffected.
+ *
+ * 矢印の向きと一致させる: 右に転がす→進む、左に転がす→戻る。 */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
     suppress-movement;
 
-    back {
+    forward {
         pattern = <GESTURE_RIGHT>;
-        bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
+        bindings = <&kp LA(RIGHT_ARROW)>;  /* Alt+Right: forward */
     };
 
-    forward {
+    back {
         pattern = <GESTURE_LEFT>;
-        bindings = <&kp LA(RIGHT_ARROW)>;  /* Alt+Right: forward */
+        bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
     };
 
     app_switch_up {
@@ -100,15 +100,7 @@
          *                   movement downstream during an active gesture
          *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
          *                   excludes J/K/L with 300ms prior-idle requirement
-         *   scroll_runtime - convert XY -> scroll on layer 5 only
-         *
-         * NOTE: mouse_runtime_input_processor removed from this chain;
-         * its only role here (temp-layer) doesn't support the exclusion
-         * feature we need, so AML moved back to the static zip_temp_layer
-         * node above. If mouse_runtime_input_processor also configures
-         * something else (e.g. CPI/snipe) elsewhere in Studio, let me know
-         * and I'll add it back alongside zip_temp_layer instead of in
-         * place of it. */
+         *   scroll_runtime - convert XY -> scroll on layer 5 only */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &zip_mouse_gesture
