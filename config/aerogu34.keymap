@@ -310,7 +310,7 @@
             display-name = "Mark1";
             bindings = <
 &kp EXCLAMATION       &kp AT                &kp HASH           &kp DOLLAR       &kp PERCENT          &kp CARET          &kp AMPERSAND  &kp ASTERISK      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
-&kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp LA(PRINTSCREEN)  &kp LS(MINUS)      &kp EQUAL      &kp LEFT_BRACKET  &kp RIGHT_BRACKET     &kp TILDE
+&kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp LA(PRINTSCREEN)  &kp LS(MINUS)      &kp EQUAL      &kp JP_LBRACKET   &kp JP_RBRACKET       &kp TILDE
 &trans                &trans                &kp LC(MINUS)      &kp LC(PLUS)     &kp LC(N0)           &kp DOUBLE_QUOTES  &kp COLON      &kp LS(COMMA)     &kp LS(PERIOD)        &kp LS(SLASH)
 &trans                &mo 3                                                                          &trans             &trans
             >;
