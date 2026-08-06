@@ -12,6 +12,8 @@ manifest:
       url-base: https://github.com/t-ogura
     - name: amgskobo
       url-base: https://github.com/amgskobo
+    - name: kot149
+      url-base: https://github.com/kot149
   projects:
     # ZMK: cormoran fork, main+dya = ZMK main (Zephyr 4.1) base with DYA Studio RPC
     - name: zmk
@@ -45,5 +47,9 @@ manifest:
     - name: zmk-input-inertia
       remote: amgskobo
       revision: main
+    # Mouse gesture recognition (K+L combo)
+    - name: zmk-mouse-gesture
+      remote: kot149
+      revision: v1
   self:
     path: config
