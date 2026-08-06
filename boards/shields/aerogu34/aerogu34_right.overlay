@@ -5,6 +5,7 @@
 #include <dt-bindings/zmk/runtime_input_processor.h>
 #include <dt-bindings/zmk/input_transform.h>
 #include <mouse-gesture.dtsi>
+#include <zmk-input-inertia/input/processor/input_inertia.dtsi>
 
 &default_transform {
     col-offset = <5>;
@@ -32,6 +33,29 @@
     active-layers = <32>;  /* BIT(5) = layer 5 (SCROLL) */
     axis-snap-mode = <AXIS_SNAP_MODE_Y>;
     axis-snap-threshold = <200>;
+};
+
+/* Inertia processor: continues movement/scroll after input stops, with
+ * exponential decay. Placed at the END of the trackball_listener chain
+ * (see below) so it operates on the final processed values -- after
+ * scroll_runtime_input_processor has decided move-vs-scroll for the
+ * current layer. Since move and scroll share this single chain (no
+ * separate layer-branches), one shared &zip_inertia instance covers
+ * both cases automatically. */
+&zip_inertia {
+    trigger-ms = <35>;                  /* 2x the ~15ms sensor polling interval */
+
+    move-decay-factor-int = <90>;
+    move-report-interval-ms = <35>;
+    move-threshold-start = <15>;
+    move-threshold-stop = <1>;
+
+    scroll-decay-factor-int = <85>;
+    scroll-report-interval-ms = <65>;
+    scroll-threshold-start = <2>;
+    scroll-threshold-stop = <0>;
+
+    cancel-scroll-inertia-on-ctrl;
 };
 
 /* AML (auto-mouse-layer) reverted to the static zip_temp_layer processor.
@@ -102,12 +126,15 @@
          *                   movement downstream during an active gesture
          *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
          *                   excludes J/K/L with 300ms prior-idle requirement
-         *   scroll_runtime - convert XY -> scroll on layer 5 only */
+         *   scroll_runtime - convert XY -> scroll on layer 5 only
+         *   inertia       - continues movement/scroll after release
+         *                   (MUST be last: operates on final values) */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &zip_mouse_gesture
                             &zip_temp_layer 1 1000
-                            &scroll_runtime_input_processor>;
+                            &scroll_runtime_input_processor
+                            &zip_inertia>;
     };
 };
 
