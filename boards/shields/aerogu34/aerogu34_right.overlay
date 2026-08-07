@@ -43,21 +43,24 @@
  * separate layer-branches), one shared &zip_inertia instance covers
  * both cases automatically.
  *
+ * Mouse移動側は明示的に無効化(decay=0で発動しても即ゼロに減衰)。
+ * Scroll側は閾値が高すぎて発動していなかった疑いがあるため2→1に変更。
+ * (実装コードまでは未確認、設定値からの推測 -- 要動作確認)
+ *
  * NOTE: cancel-scroll-inertia-on-ctrl was tried but ended up blocking
  * Ctrl+scroll zoom entirely (not just the inertia tail), so it's
- * removed. Ctrl+scroll zoom now works normally; the only tradeoff is
- * that inertia doesn't auto-cancel when Ctrl is pressed mid-coast. */
+ * removed. */
 &zip_inertia {
     trigger-ms = <35>;                  /* 2x the ~15ms sensor polling interval */
 
-    move-decay-factor-int = <90>;
+    move-decay-factor-int = <0>;
     move-report-interval-ms = <35>;
     move-threshold-start = <15>;
     move-threshold-stop = <1>;
 
     scroll-decay-factor-int = <85>;
     scroll-report-interval-ms = <65>;
-    scroll-threshold-start = <2>;
+    scroll-threshold-start = <1>;
     scroll-threshold-stop = <0>;
 };
 
