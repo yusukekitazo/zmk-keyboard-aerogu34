@@ -54,15 +54,13 @@
  *   90 / 40ms  -> felt weaker
  *   94 / 40ms  -> felt weaker still
  *   97 / 40ms  -> barely any coast at all
- *   Pattern suggests raising decay-factor-int made it decay FASTER, not
- *   slower -- i.e. this value is likely "decay strength" rather than
- *   "retention %", opposite of the initial assumption. Trying 70 next
- *   (lower value) to test the reversed hypothesis. Untested -- confirm
- *   feel after flashing.
- *
- * NOTE: cancel-scroll-inertia-on-ctrl was tried but ended up blocking
- * Ctrl+scroll zoom entirely (not just the inertia tail), so it's
- * removed. */
+ *   70 / 40ms  -> almost no change from 97
+ *   Pattern across 70-97 barely differing suggests decay-factor-int is
+ *   the % of velocity LOST per step (not retained), so 70-97 are all
+ *   in the "fast loss" range. Dropping much lower (30) to test.
+ *   Untested -- confirm feel after flashing. If still no change, the
+ *   direction/meaning of this parameter needs to be confirmed against
+ *   the module's actual source rather than guessed further. */
 &zip_inertia {
     trigger-ms = <35>;                  /* 2x the ~15ms sensor polling interval */
 
@@ -71,7 +69,7 @@
     move-threshold-start = <15>;
     move-threshold-stop = <1>;
 
-    scroll-decay-factor-int = <70>;
+    scroll-decay-factor-int = <30>;
     scroll-report-interval-ms = <40>;
     scroll-threshold-start = <2>;
     scroll-threshold-stop = <0>;
