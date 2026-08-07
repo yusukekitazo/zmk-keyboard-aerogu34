@@ -85,25 +85,20 @@
         timeout-ms = <300>;
     };
 
-    /* Wheel-unit scaler, shared by the scroll-inertia chain below.
-     * mjmjm0101's inertia processor writes HID directly and bypasses
-     * anything downstream, so its own scale/scale-div MUST match the
-     * arguments passed to this scaler (4, 675) -- see scroller_v. */
-    zip_wheel_scaler: zip_wheel_scaler {
-        compatible = "zmk,input-processor-scaler";
-        #input-processor-cells = <2>;
-        type = <INPUT_EV_REL>;
-        codes = <INPUT_REL_WHEEL>;
-        track-remainders;
-    };
-
-    /* iOS-style scroll inertia (mjmjm0101/zmk-input-processor-scroll-inertia).
+    /* iOS-style scroll inertia (yusukekitazo fork of
+     * mjmjm0101/zmk-input-processor-scroll-inertia).
      * Replaces amgskobo/zmk-input-inertia -- that module's decay behavior
      * was undocumented and several tuning rounds didn't converge on a
      * consistent feel. This module documents decay as a per-tick
      * retention multiplier (990 = velocity *= 0.990/tick) plus a
-     * separate `friction` knob for taming short flicks independently,
-     * which is exactly the control we were missing.
+     * separate `friction` knob for taming short flicks independently.
+     *
+     * NOTE: previous build failed with a duplicate-label error because
+     * a custom zip_wheel_scaler node was added here, colliding with the
+     * one already defined in aerogu34.keymap's input_processors block.
+     * Per the module author's own working example, the correct
+     * end-of-chain scaler is the built-in &zip_scroll_scaler -- no
+     * custom node needed here at all.
      *
      * axis=1 (Y/vertical) is the primary scroll axis for the SCROLL
      * layer. swap-mod lets Shift flip to horizontal scroll on demand
@@ -156,7 +151,7 @@
                                 &zip_mouse_gesture
                                 &zip_xy_to_scroll_mapper
                                 &scroll_inertia_v
-                                &zip_wheel_scaler 4 675>;
+                                &zip_scroll_scaler 4 675>;
         };
     };
 };
