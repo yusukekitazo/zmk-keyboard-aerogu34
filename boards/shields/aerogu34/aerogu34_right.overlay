@@ -49,10 +49,14 @@
  * pinch-zoom gesture; reverted to 2, confirmed fixed (Android-side
  * misdetection, not a firmware bug).
  *
- * Scroll decay felt too abrupt at the end ("ガックン" stop) with
- * decay=85/interval=65ms; raised decay to 90 (same as move) and
- * shortened interval to 40ms for a smoother, more gradual deceleration.
- * Untested -- confirm feel after flashing.
+ * Scroll decay tuning history:
+ *   85 / 65ms  -> felt too abrupt ("ガックン") at the end
+ *   90 / 40ms  -> smoother steps, but shorter interval meant more decay
+ *                 steps per second, so overall inertia duration got
+ *                 shorter and felt weak
+ *   94 / 40ms  -> raised decay to compensate; still being evaluated
+ *   97 / 40ms  -> testing further, aiming for longer/smoother coast.
+ *                 Untested -- confirm feel after flashing.
  *
  * NOTE: cancel-scroll-inertia-on-ctrl was tried but ended up blocking
  * Ctrl+scroll zoom entirely (not just the inertia tail), so it's
@@ -65,7 +69,7 @@
     move-threshold-start = <15>;
     move-threshold-stop = <1>;
 
-    scroll-decay-factor-int = <90>;
+    scroll-decay-factor-int = <97>;
     scroll-report-interval-ms = <40>;
     scroll-threshold-start = <2>;
     scroll-threshold-stop = <0>;
