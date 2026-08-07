@@ -44,8 +44,15 @@
  * both cases automatically.
  *
  * Mouse移動側は明示的に無効化(decay=0で発動しても即ゼロに減衰)。
- * Scroll側は閾値が高すぎて発動していなかった疑いがあるため2→1に変更。
- * (実装コードまでは未確認、設定値からの推測 -- 要動作確認)
+ *
+ * scroll-threshold-start=1 caused Android to misinterpret scroll as a
+ * pinch-zoom gesture; reverted to 2, confirmed fixed (Android-side
+ * misdetection, not a firmware bug).
+ *
+ * Scroll decay felt too abrupt at the end ("ガックン" stop) with
+ * decay=85/interval=65ms; raised decay to 90 (same as move) and
+ * shortened interval to 40ms for a smoother, more gradual deceleration.
+ * Untested -- confirm feel after flashing.
  *
  * NOTE: cancel-scroll-inertia-on-ctrl was tried but ended up blocking
  * Ctrl+scroll zoom entirely (not just the inertia tail), so it's
@@ -58,9 +65,9 @@
     move-threshold-start = <15>;
     move-threshold-stop = <1>;
 
-    scroll-decay-factor-int = <85>;
-    scroll-report-interval-ms = <65>;
-    scroll-threshold-start = <1>;
+    scroll-decay-factor-int = <90>;
+    scroll-report-interval-ms = <40>;
+    scroll-threshold-start = <2>;
     scroll-threshold-stop = <0>;
 };
 
