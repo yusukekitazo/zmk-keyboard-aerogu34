@@ -50,17 +50,15 @@
  * misdetection, not a firmware bug).
  *
  * Scroll decay tuning history:
- *   85 / 65ms  -> felt too abrupt ("ガックン") at the end
- *   90 / 40ms  -> felt weaker
- *   94 / 40ms  -> felt weaker still
- *   97 / 40ms  -> barely any coast at all
- *   70 / 40ms  -> almost no change from 97
- *   Pattern across 70-97 barely differing suggests decay-factor-int is
- *   the % of velocity LOST per step (not retained), so 70-97 are all
- *   in the "fast loss" range. Dropping much lower (30) to test.
- *   Untested -- confirm feel after flashing. If still no change, the
- *   direction/meaning of this parameter needs to be confirmed against
- *   the module's actual source rather than guessed further. */
+ *   85 / 65ms  -> some coast but ends abruptly ("ガックン")
+ *   90-97 / 40ms -> got progressively WEAKER as decay increased, which
+ *   contradicted the assumption that higher decay = more retention.
+ *   A related module (sekigon-gonnoc/zmk-driver-iqs7211e)'s docs confirm
+ *   the conventional meaning IS "retention multiplier per tick" (higher
+ *   = slower decay = longer coast), so the weakening trend was likely a
+ *   confound from changing report-interval-ms AT THE SAME TIME as decay.
+ *   Reverted interval to the original 65ms and testing decay alone at
+ *   95 to isolate the variable. Untested -- confirm feel after flashing. */
 &zip_inertia {
     trigger-ms = <35>;                  /* 2x the ~15ms sensor polling interval */
 
@@ -69,8 +67,8 @@
     move-threshold-start = <15>;
     move-threshold-stop = <1>;
 
-    scroll-decay-factor-int = <30>;
-    scroll-report-interval-ms = <40>;
+    scroll-decay-factor-int = <95>;
+    scroll-report-interval-ms = <65>;
     scroll-threshold-start = <2>;
     scroll-threshold-stop = <0>;
 };
