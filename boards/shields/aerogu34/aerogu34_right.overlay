@@ -4,8 +4,8 @@
 #include <input/processors/runtime-input-processor.dtsi>
 #include <dt-bindings/zmk/runtime_input_processor.h>
 #include <dt-bindings/zmk/input_transform.h>
+#include <dt-bindings/zmk/modifiers.h>
 #include <mouse-gesture.dtsi>
-#include <zmk-input-inertia/input/processor/input_inertia.dtsi>
 
 &default_transform {
     col-offset = <5>;
@@ -25,61 +25,15 @@
  * console, so drop the node. */
 &board_cdc_acm_uart { status = "disabled"; };
 
-&scroll_runtime_input_processor {
-    processor-label = "rscroll";
-    x-codes = <INPUT_REL_X>;
-    y-codes = <INPUT_REL_Y>;
-    xy-to-scroll-enabled;
-    active-layers = <32>;  /* BIT(5) = layer 5 (SCROLL) */
-    axis-snap-mode = <AXIS_SNAP_MODE_Y>;
-    axis-snap-threshold = <200>;
-};
-
-/* Inertia processor: continues movement/scroll after input stops, with
- * exponential decay. Placed at the END of the trackball_listener chain
- * (see below) so it operates on the final processed values -- after
- * scroll_runtime_input_processor has decided move-vs-scroll for the
- * current layer. Since move and scroll share this single chain (no
- * separate layer-branches), one shared &zip_inertia instance covers
- * both cases automatically.
- *
- * Mouse移動側は明示的に無効化(decay=0で発動しても即ゼロに減衰)。
- *
- * scroll-threshold-start=1 caused Android to misinterpret scroll as a
- * pinch-zoom gesture; reverted to 2, confirmed fixed (Android-side
- * misdetection, not a firmware bug).
- *
- * Scroll decay tuning history:
- *   85 / 65ms  -> some coast but ends abruptly ("ガックン")
- *   90-97 / 40ms -> got progressively WEAKER as decay increased, which
- *   contradicted the assumption that higher decay = more retention.
- *   A related module (sekigon-gonnoc/zmk-driver-iqs7211e)'s docs confirm
- *   the conventional meaning IS "retention multiplier per tick" (higher
- *   = slower decay = longer coast), so the weakening trend was likely a
- *   confound from changing report-interval-ms AT THE SAME TIME as decay.
- *   Reverted interval to the original 65ms and testing decay alone at
- *   95 to isolate the variable. Untested -- confirm feel after flashing. */
-&zip_inertia {
-    trigger-ms = <35>;                  /* 2x the ~15ms sensor polling interval */
-
-    move-decay-factor-int = <0>;
-    move-report-interval-ms = <35>;
-    move-threshold-start = <15>;
-    move-threshold-stop = <1>;
-
-    scroll-decay-factor-int = <95>;
-    scroll-report-interval-ms = <65>;
-    scroll-threshold-start = <2>;
-    scroll-threshold-stop = <0>;
-};
-
-/* AML (auto-mouse-layer) reverted to the static zip_temp_layer processor.
+/* AML (auto-mouse-layer) via the static zip_temp_layer processor.
  * cormoran's mouse_runtime_input_processor's temp-layer feature does NOT
  * support excluded-positions / require-prior-idle-ms, so it can't do
  * typing-misfire prevention. AML layer/timeout are build-time fixed
  * (not Studio-editable) as a result -- confirmed not needed.
  *
- * J/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。 */
+ * J/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。
+ * SCROLLレイヤー(下のscroller_v)では意図的にこのAMLを外している
+ * (すでにSCROLLレイヤーにいる間はMOUSEレイヤーへ切り替える必要がない)。 */
 &zip_temp_layer {
     excluded-positions = <
         16 // J
@@ -131,25 +85,79 @@
         timeout-ms = <300>;
     };
 
+    /* Wheel-unit scaler, shared by the scroll-inertia chain below.
+     * mjmjm0101's inertia processor writes HID directly and bypasses
+     * anything downstream, so its own scale/scale-div MUST match the
+     * arguments passed to this scaler (4, 675) -- see scroller_v. */
+    zip_wheel_scaler: zip_wheel_scaler {
+        compatible = "zmk,input-processor-scaler";
+        #input-processor-cells = <2>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_WHEEL>;
+        track-remainders;
+    };
+
+    /* iOS-style scroll inertia (mjmjm0101/zmk-input-processor-scroll-inertia).
+     * Replaces amgskobo/zmk-input-inertia -- that module's decay behavior
+     * was undocumented and several tuning rounds didn't converge on a
+     * consistent feel. This module documents decay as a per-tick
+     * retention multiplier (990 = velocity *= 0.990/tick) plus a
+     * separate `friction` knob for taming short flicks independently,
+     * which is exactly the control we were missing.
+     *
+     * axis=1 (Y/vertical) is the primary scroll axis for the SCROLL
+     * layer. swap-mod lets Shift flip to horizontal scroll on demand
+     * without needing a second layer.
+     *
+     * scale/scale-div (4/675) and the starting decay values are the
+     * module's own documented defaults for a 1000 CPI PMW3610 @ 125Hz --
+     * close to this board's PAW3222 setup, so they're a reasonable
+     * starting point. Untested on this hardware yet; may need tuning
+     * after flashing. */
+    scroll_inertia_v: scroll_inertia_v {
+        compatible = "zmk,input-processor-scroll-inertia";
+        #input-processor-cells = <0>;
+
+        axis  = <1>;   /* Y axis only (vertical) */
+        layer = <5>;   /* SCROLL layer */
+
+        scale     = <4>;
+        scale-div = <675>;
+
+        /* Hold Shift to scroll horizontally instead */
+        swap-mod = <(MOD_LSFT|MOD_RSFT)>;
+    };
+
     trackball_listener: trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* Chain order:
+        /* Default chain (all layers except SCROLL, see scroller_v below):
          *   deadzone      - filter sub-threshold noise
          *   xy_transform  - invert both axes (sensor-mounting orientation)
          *   mouse_gesture - active only while K+L combo held; suppresses
          *                   movement downstream during an active gesture
          *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
          *                   excludes J/K/L with 300ms prior-idle requirement
-         *   scroll_runtime - convert XY -> scroll on layer 5 only
-         *   inertia       - continues movement/scroll after release
-         *                   (MUST be last: operates on final values) */
+         *
+         * No inertia on cursor movement -- confirmed not wanted. */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &zip_mouse_gesture
-                            &zip_temp_layer 1 1000
-                            &scroll_runtime_input_processor
-                            &zip_inertia>;
+                            &zip_temp_layer 1 1000>;
+
+        /* SCROLL layer (index5, entered via the J+K combo) override:
+         * same deadzone/orientation/gesture handling, but XY is mapped
+         * to scroll and run through the new inertia processor instead
+         * of the temp-layer AML (already intentionally in this layer). */
+        scroller_v {
+            layers = <5>;
+            input-processors = <&deadzone_processor
+                                &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
+                                &zip_mouse_gesture
+                                &zip_xy_to_scroll_mapper
+                                &scroll_inertia_v
+                                &zip_wheel_scaler 4 675>;
+        };
     };
 };
 
