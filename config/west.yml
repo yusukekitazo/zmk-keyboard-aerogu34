@@ -12,8 +12,8 @@ manifest:
       url-base: https://github.com/t-ogura
     - name: kot149
       url-base: https://github.com/kot149
-    - name: mjmjm0101
-      url-base: https://github.com/mjmjm0101
+    - name: yusukekitazo
+      url-base: https://github.com/yusukekitazo
   projects:
     # ZMK: cormoran fork, main+dya = ZMK main (Zephyr 4.1) base with DYA Studio RPC
     - name: zmk
@@ -47,9 +47,9 @@ manifest:
     - name: zmk-mouse-gesture
       remote: kot149
       revision: v1
-    # iOS-style scroll inertia (replaces amgskobo/zmk-input-inertia)
+    # iOS-style scroll inertia (own fork of mjmjm0101/zmk-input-processor-scroll-inertia)
     - name: zmk-input-processor-scroll-inertia
-      remote: mjmjm0101
+      remote: yusukekitazo
       revision: main
   self:
     path: config
