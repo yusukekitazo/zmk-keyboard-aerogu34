@@ -51,12 +51,14 @@
  *
  * Scroll decay tuning history:
  *   85 / 65ms  -> felt too abrupt ("ガックン") at the end
- *   90 / 40ms  -> smoother steps, but shorter interval meant more decay
- *                 steps per second, so overall inertia duration got
- *                 shorter and felt weak
- *   94 / 40ms  -> raised decay to compensate; still being evaluated
- *   97 / 40ms  -> testing further, aiming for longer/smoother coast.
- *                 Untested -- confirm feel after flashing.
+ *   90 / 40ms  -> felt weaker
+ *   94 / 40ms  -> felt weaker still
+ *   97 / 40ms  -> barely any coast at all
+ *   Pattern suggests raising decay-factor-int made it decay FASTER, not
+ *   slower -- i.e. this value is likely "decay strength" rather than
+ *   "retention %", opposite of the initial assumption. Trying 70 next
+ *   (lower value) to test the reversed hypothesis. Untested -- confirm
+ *   feel after flashing.
  *
  * NOTE: cancel-scroll-inertia-on-ctrl was tried but ended up blocking
  * Ctrl+scroll zoom entirely (not just the inertia tail), so it's
@@ -69,7 +71,7 @@
     move-threshold-start = <15>;
     move-threshold-stop = <1>;
 
-    scroll-decay-factor-int = <97>;
+    scroll-decay-factor-int = <70>;
     scroll-report-interval-ms = <40>;
     scroll-threshold-start = <2>;
     scroll-threshold-stop = <0>;
@@ -106,67 +108,4 @@
 
     forward {
         pattern = <GESTURE_RIGHT>;
-        bindings = <&kp LA(RIGHT_ARROW)>;  /* Alt+Right: forward */
-    };
-
-    back {
-        pattern = <GESTURE_LEFT>;
-        bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
-    };
-
-    tab_next {
-        pattern = <GESTURE_UP>;
-        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: next tab */
-    };
-
-    tab_prev {
-        pattern = <GESTURE_DOWN>;
-        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: previous tab */
-    };
-};
-
-/ {
-    deadzone_processor: deadzone_processor {
-        compatible = "zmk,input-processor-deadzone";
-        #input-processor-cells = <0>;
-        threshold = <10>;
-        timeout-ms = <300>;
-    };
-
-    trackball_listener: trackball_listener {
-        compatible = "zmk,input-listener";
-        device = <&trackball>;
-        /* Chain order:
-         *   deadzone      - filter sub-threshold noise
-         *   xy_transform  - invert both axes (sensor-mounting orientation)
-         *   mouse_gesture - active only while K+L combo held; suppresses
-         *                   movement downstream during an active gesture
-         *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
-         *                   excludes J/K/L with 300ms prior-idle requirement
-         *   scroll_runtime - convert XY -> scroll on layer 5 only
-         *   inertia       - continues movement/scroll after release
-         *                   (MUST be last: operates on final values) */
-        input-processors = <&deadzone_processor
-                            &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
-                            &zip_mouse_gesture
-                            &zip_temp_layer 1 1000
-                            &scroll_runtime_input_processor
-                            &zip_inertia>;
-    };
-};
-
-&spi0 {
-    status = "okay";
-
-    trackball: trackball@0 {
-        status = "okay";
-        compatible = "pixart,paw3222";
-        reg = <0>;
-        spi-max-frequency = <2000000>;
-        irq-gpios = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        /* Boot-time sensor CPI (counts per inch). Valid range 608-4826 in
-         * steps of 38; driver rounds down. 800 maps to 21*38 = 798.
-         * DYA Studio's runtime-input-processor can override at runtime. */
-        res-cpi = <800>;
-    };
-};
+        bindings = <&kp LA(RIGHT_ARROW)>;  /*
