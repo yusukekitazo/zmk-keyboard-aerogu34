@@ -41,7 +41,12 @@
  * scroll_runtime_input_processor has decided move-vs-scroll for the
  * current layer. Since move and scroll share this single chain (no
  * separate layer-branches), one shared &zip_inertia instance covers
- * both cases automatically. */
+ * both cases automatically.
+ *
+ * NOTE: cancel-scroll-inertia-on-ctrl was tried but ended up blocking
+ * Ctrl+scroll zoom entirely (not just the inertia tail), so it's
+ * removed. Ctrl+scroll zoom now works normally; the only tradeoff is
+ * that inertia doesn't auto-cancel when Ctrl is pressed mid-coast. */
 &zip_inertia {
     trigger-ms = <35>;                  /* 2x the ~15ms sensor polling interval */
 
@@ -54,8 +59,6 @@
     scroll-report-interval-ms = <65>;
     scroll-threshold-start = <2>;
     scroll-threshold-stop = <0>;
-
-    cancel-scroll-inertia-on-ctrl;
 };
 
 /* AML (auto-mouse-layer) reverted to the static zip_temp_layer processor.
