@@ -25,6 +25,22 @@
  * console, so drop the node. */
 &board_cdc_acm_uart { status = "disabled"; };
 
+/* mouse_runtime_input_processor is wired into trackball_listener below
+ * (DYA Studio's CPI/snipe tuning UI), matching upstream's approach.
+ * We only use it for that -- AML stays on the separate zip_temp_layer
+ * node (excluded-positions / require-prior-idle-ms aren't supported by
+ * mouse_runtime's own temp-layer feature). No overrides needed here;
+ * defaults are fine. */
+
+/* scroll_runtime_input_processor is NOT used (replaced by scroll_inertia_v
+ * below) -- explicitly disabled rather than left unattached. DYA Studio's
+ * Trackball Settings tab crashed the firmware when this node existed but
+ * wasn't wired into any listener; disabling it removes it from the build
+ * entirely instead of leaving it dangling. */
+&scroll_runtime_input_processor {
+    status = "disabled";
+};
+
 /* AML (auto-mouse-layer) via the static zip_temp_layer processor.
  * cormoran's mouse_runtime_input_processor's temp-layer feature does NOT
  * support excluded-positions / require-prior-idle-ms, so it can't do
@@ -87,18 +103,6 @@
 
     /* iOS-style scroll inertia (yusukekitazo fork of
      * mjmjm0101/zmk-input-processor-scroll-inertia).
-     * Replaces amgskobo/zmk-input-inertia -- that module's decay behavior
-     * was undocumented and several tuning rounds didn't converge on a
-     * consistent feel. This module documents decay as a per-tick
-     * retention multiplier (990 = velocity *= 0.990/tick) plus a
-     * separate `friction` knob for taming short flicks independently.
-     *
-     * NOTE: previous build failed with a duplicate-label error because
-     * a custom zip_wheel_scaler node was added here, colliding with the
-     * one already defined in aerogu34.keymap's input_processors block.
-     * Per the module author's own working example, the correct
-     * end-of-chain scaler is the built-in &zip_scroll_scaler -- no
-     * custom node needed here at all.
      *
      * axis=1 (Y/vertical) is the primary scroll axis for the SCROLL
      * layer. swap-mod lets Shift flip to horizontal scroll on demand
@@ -106,9 +110,8 @@
      *
      * scale/scale-div (4/675) and the starting decay values are the
      * module's own documented defaults for a 1000 CPI PMW3610 @ 125Hz --
-     * close to this board's PAW3222 setup, so they're a reasonable
-     * starting point. Untested on this hardware yet; may need tuning
-     * after flashing. */
+     * close to this board's PAW3222 setup. Confirmed working on
+     * hardware (coasts after release). */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
@@ -129,6 +132,10 @@
         /* Default chain (all layers except SCROLL, see scroller_v below):
          *   deadzone      - filter sub-threshold noise
          *   xy_transform  - invert both axes (sensor-mounting orientation)
+         *   mouse_runtime - DYA Studio CPI/snipe tuning UI (attached to
+         *                   avoid the Trackball Settings tab crash; not
+         *                   otherwise relied upon -- res-cpi is set at
+         *                   boot on the trackball node below)
          *   mouse_gesture - active only while K+L combo held; suppresses
          *                   movement downstream during an active gesture
          *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
@@ -137,13 +144,15 @@
          * No inertia on cursor movement -- confirmed not wanted. */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
+                            &mouse_runtime_input_processor
                             &zip_mouse_gesture
                             &zip_temp_layer 1 1000>;
 
         /* SCROLL layer (index5, entered via the J+K combo) override:
          * same deadzone/orientation/gesture handling, but XY is mapped
          * to scroll and run through the new inertia processor instead
-         * of the temp-layer AML (already intentionally in this layer). */
+         * of mouse_runtime/temp-layer (already intentionally in this
+         * layer). */
         scroller_v {
             layers = <5>;
             input-processors = <&deadzone_processor
