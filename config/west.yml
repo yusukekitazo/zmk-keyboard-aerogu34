@@ -15,11 +15,10 @@ manifest:
     - name: yusukekitazo
       url-base: https://github.com/yusukekitazo
   projects:
-    # ZMK: cormoran fork, TEST: switching from main+dya to main+custom-studio-protocol
-    # to check compatibility with new zmk-feature-* modules
+    # ZMK: cormoran fork, main+dya = ZMK main (Zephyr 4.1) base with DYA Studio RPC
     - name: zmk
       remote: cormoran
-      revision: main+custom-studio-protocol
+      revision: main+dya
       import: app/west.yml
     # Trackball driver
     - name: zmk-driver-paw3222
@@ -51,10 +50,6 @@ manifest:
     # iOS-style scroll inertia (own fork of mjmjm0101/zmk-input-processor-scroll-inertia)
     - name: zmk-input-processor-scroll-inertia
       remote: yusukekitazo
-      revision: main
-    # TEST: device info diagnostics via Studio RPC
-    - name: zmk-feature-device-info
-      remote: cormoran
       revision: main
   self:
     path: config
