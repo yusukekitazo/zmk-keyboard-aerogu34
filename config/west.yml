@@ -53,3 +53,28 @@ manifest:
       revision: main
   self:
     path: config
+
+projects:
+  # --- DYA Studio feature: device info / diagnostics / stability ---
+  - name: zmk-feature-device-info
+    remote: cormoran
+    revision: main
+  - name: zmk-feature-watchdog
+    remote: cormoran
+    revision: main
+  - name: zmk-feature-kscan-diagnostics
+    remote: cormoran
+    revision: main
+
+  # --- DYA Studio: runtime editable combo/macro ---
+  - name: zmk-feature-runtime-combo
+    remote: cormoran
+    revision: main
+  - name: zmk-feature-runtime-macro
+    remote: cormoran
+    revision: main
+
+  # --- DYA Studio: devtool (stack usage / etc) ---
+  - name: zmk-module-devtool
+    remote: cormoran
+    revision: main
