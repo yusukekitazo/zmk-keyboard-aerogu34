@@ -1,7 +1,6 @@
 manifest:
   defaults:
     revision: main
-
   remotes:
     - name: cormoran
       url-base: https://github.com/cormoran
@@ -15,22 +14,18 @@ manifest:
       url-base: https://github.com/kot149
     - name: yusukekitazo
       url-base: https://github.com/yusukekitazo
-
   projects:
     # ZMK: cormoran fork, main+dya = ZMK main (Zephyr 4.1) base with DYA Studio RPC
     - name: zmk
       remote: cormoran
       revision: main+dya
       import: app/west.yml
-
     # Trackball driver
     - name: zmk-driver-paw3222
       remote: sekigon-gonnoc
-
     # RGB LED widget (main supports Zephyr 4.1 / xiao_ble naming)
     - name: zmk-rgbled-widget
       remote: caksoylar
-
     # DYA Studio modules (main = v4-compatible)
     - name: zmk-module-ble-management
       remote: cormoran
@@ -40,62 +35,21 @@ manifest:
       remote: cormoran
     - name: zmk-module-runtime-input-processor
       remote: cormoran
-
     # Deadzone input processor
     - name: zmk-input-processor-deadzone
       remote: prospector
-
     # Prospector
     - name: prospector-zmk-module
       remote: prospector
       revision: main
       path: modules/prospector-zmk-module
-
     # Mouse gesture recognition (K+L combo)
     - name: zmk-mouse-gesture
       remote: kot149
       revision: v1
-
-    # iOS-style scroll inertia (own fork)
+    # iOS-style scroll inertia (own fork of mjmjm0101/zmk-input-processor-scroll-inertia)
     - name: zmk-input-processor-scroll-inertia
       remote: yusukekitazo
       revision: main
-
-    # ================================
-    # DYA Studio latest (2026.08.09.0+ 想定)
-    # ================================
-    # Device info tab
-    - name: zmk-feature-device-info
-      remote: cormoran
-      revision: main
-
-    # Watchdog/stability tab
-    - name: zmk-feature-watchdog
-      remote: cormoran
-      revision: main
-
-    # Keyswitch / kscan diagnostics tab
-    - name: zmk-feature-kscan-diagnostics
-      remote: cormoran
-      revision: main
-
-    # Runtime editable combo/macro (depends on custom-settings)
-    - name: zmk-feature-custom-settings
-      remote: cormoran
-      revision: main
-
-    - name: zmk-feature-runtime-combo
-      remote: cormoran
-      revision: main
-
-    - name: zmk-feature-runtime-macro
-      remote: cormoran
-      revision: main
-
-    # Devtool (stack usage etc)
-    - name: zmk-module-devtool
-      remote: cormoran
-      revision: main
-
   self:
     path: config
