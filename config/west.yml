@@ -56,13 +56,13 @@ manifest:
       remote: kot149
       revision: v1
 
-    # iOS-style scroll inertia (own fork of mjmjm0101/zmk-input-processor-scroll-inertia)
+    # iOS-style scroll inertia (own fork)
     - name: zmk-input-processor-scroll-inertia
       remote: yusukekitazo
       revision: main
 
     # ================================
-    # DYA Studio latest (requested)
+    # DYA Studio latest (2026.08.09.0+ 想定)
     # ================================
     # Device info tab
     - name: zmk-feature-device-info
@@ -79,10 +79,15 @@ manifest:
       remote: cormoran
       revision: main
 
-    # Runtime editable combo/macro (Studioでランタイム編集したい)
+    # Runtime editable combo/macro (depends on custom-settings)
+    - name: zmk-feature-custom-settings
+      remote: cormoran
+      revision: main
+
     - name: zmk-feature-runtime-combo
       remote: cormoran
       revision: main
+
     - name: zmk-feature-runtime-macro
       remote: cormoran
       revision: main
