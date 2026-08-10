@@ -2,8 +2,8 @@ manifest:
   defaults:
     revision: main
   remotes:
-    - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
+    - name: cormoran
+      url-base: https://github.com/cormoran
     - name: sekigon-gonnoc
       url-base: https://github.com/sekigon-gonnoc
     - name: caksoylar
@@ -15,40 +15,39 @@ manifest:
     - name: yusukekitazo
       url-base: https://github.com/yusukekitazo
   projects:
-    # ZMK: switched from cormoran/main+dya to official zmkfirmware v0.3.0,
-    # following shakushakupanda/zmk-config-moNa2-v2's dya-studio-v1.0.0
-    # release as a reference. This drops all cormoran-specific DYA modules
-    # (ble-management, battery-history, settings-rpc, runtime-input-processor)
-    # since they're not compatible with this base. Basic ZMK Studio (keymap
-    # editing) still works via the official Studio RPC protocol that DYA
-    # Studio's web UI also speaks.
+    # ZMK: cormoran fork, main+dya = ZMK main (Zephyr 4.1) base with DYA Studio RPC
     - name: zmk
-      remote: zmkfirmware
-      revision: v0.3.0
+      remote: cormoran
+      revision: main+dya
       import: app/west.yml
-    # Trackball driver -- kept as PAW3222 (NOT moNa2's PMW3610, different
-    # sensor for our hardware)
+    # Trackball driver
     - name: zmk-driver-paw3222
       remote: sekigon-gonnoc
-    # RGB LED widget
+    # RGB LED widget (main supports Zephyr 4.1 / xiao_ble naming)
     - name: zmk-rgbled-widget
       remote: caksoylar
-      revision: v0.3
-    # Deadzone input processor -- compatibility with v0.3.0 unconfirmed
+    # DYA Studio modules (main = v4-compatible)
+    - name: zmk-module-ble-management
+      remote: cormoran
+    - name: zmk-module-battery-history
+      remote: cormoran
+    - name: zmk-module-settings-rpc
+      remote: cormoran
+    - name: zmk-module-runtime-input-processor
+      remote: cormoran
+    # Deadzone input processor
     - name: zmk-input-processor-deadzone
       remote: prospector
-    # Prospector -- compatibility with v0.3.0 unconfirmed
+    # Prospector
     - name: prospector-zmk-module
       remote: prospector
       revision: main
       path: modules/prospector-zmk-module
-    # Mouse gesture recognition (K+L combo) -- compatibility with v0.3.0
-    # unconfirmed (previously built against cormoran main+dya/Zephyr 4.1)
+    # Mouse gesture recognition (K+L combo)
     - name: zmk-mouse-gesture
       remote: kot149
       revision: v1
-    # iOS-style scroll inertia -- README explicitly states this was
-    # verified against ZMK v0.3.0, so this should be a GOOD match here
+    # iOS-style scroll inertia (own fork of mjmjm0101/zmk-input-processor-scroll-inertia)
     - name: zmk-input-processor-scroll-inertia
       remote: yusukekitazo
       revision: main
