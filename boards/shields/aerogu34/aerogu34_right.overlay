@@ -13,43 +13,20 @@
 
 &xiao_serial { status = "disabled"; };
 
-/* Disable I2C0 to prevent conflict with SPI0 (same hardware peripheral). */
+/* I2C0およびCDC ACM UARTの重複無効化 */
 &i2c0 { status = "disabled"; };
-
-/* Disable the board's default UART-over-USB-CDC-ACM endpoint.
- * Zephyr 4's xiao_ble board unconditionally adds a second CDC ACM USB
- * function for console/shell. With the studio-rpc-usb-uart snippet that
- * adds another CDC ACM for the Studio RPC channel, the device ends up
- * exposing two CDC ACMs and DYA Studio's Web Serial port-open fails
- * ("The port is already open" / wrong port chosen). We don't use the
- * console, so drop the node. */
 &board_cdc_acm_uart { status = "disabled"; };
 
-/* mouse_runtime_input_processor is wired into trackball_listener below
- * (DYA Studio's CPI/snipe tuning UI), matching upstream's approach.
- * We only use it for that -- AML stays on the separate zip_temp_layer
- * node (excluded-positions / require-prior-idle-ms aren't supported by
- * mouse_runtime's own temp-layer feature). No overrides needed here;
- * defaults are fine. */
-
-/* scroll_runtime_input_processor is NOT used (replaced by scroll_inertia_v
- * below) -- explicitly disabled rather than left unattached. DYA Studio's
- * Trackball Settings tab crashed the firmware when this node existed but
- * wasn't wired into any listener; disabling it removes it from the build
- * entirely instead of leaving it dangling. */
+/* 使わないruntimeプロセッサを無効化 */
 &scroll_runtime_input_processor {
     status = "disabled";
 };
 
-/* AML (auto-mouse-layer) via the static zip_temp_layer processor.
- * cormoran's mouse_runtime_input_processor's temp-layer feature does NOT
- * support excluded-positions / require-prior-idle-ms, so it can't do
- * typing-misfire prevention. AML layer/timeout are build-time fixed
- * (not Studio-editable) as a result -- confirmed not needed.
- *
- * J/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。
- * SCROLLレイヤー(下のscroller_v)では意図的にこのAMLを外している
- * (すでにSCROLLレイヤーにいる間はMOUSEレイヤーへ切り替える必要がない)。 */
+/* ----------------------------------------------------
+ * AML (Auto Mouse Layer) 設定
+ * J(16), K(17), L(18) のキー打鍵後300ms以内は
+ * トラックボールを動かしてもMOUSEレイヤーへ遷移しない（誤爆防止）
+ * ---------------------------------------------------- */
 &zip_temp_layer {
     excluded-positions = <
         16 // J
@@ -59,14 +36,9 @@
     require-prior-idle-ms = <300>;
 };
 
-/* Mouse gesture: activated only while the K+L combo (keymap.keymap) is
- * held. Movement IS suppressed while active, so gesture strokes don't
- * also move the cursor/scroll underneath. Normal trackball use (no combo
- * held) is completely unaffected.
- *
- * 矢印の向きと一致: 右に転がす→進む、左に転がす→戻る。
- * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。上下のapp-switchは
- * 発火しなかったため、tab切り替えに変更。 */
+/* ----------------------------------------------------
+ * Mouse Gesture 設定 (K+Lコンボ中に発動)
+ * ---------------------------------------------------- */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
@@ -74,22 +46,22 @@
 
     forward {
         pattern = <GESTURE_RIGHT>;
-        bindings = <&kp LA(RIGHT_ARROW)>;  /* Alt+Right: forward */
+        bindings = <&kp LA(RIGHT_ARROW)>;  /* Alt+Right: 進む */
     };
 
     back {
         pattern = <GESTURE_LEFT>;
-        bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
+        bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: 戻る */
     };
 
     tab_next {
         pattern = <GESTURE_UP>;
-        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: next tab */
+        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: 次のタブ */
     };
 
     tab_prev {
         pattern = <GESTURE_DOWN>;
-        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: previous tab */
+        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: 前のタブ */
     };
 };
 
@@ -101,58 +73,32 @@
         timeout-ms = <300>;
     };
 
-    /* iOS-style scroll inertia (yusukekitazo fork of
-     * mjmjm0101/zmk-input-processor-scroll-inertia).
-     *
-     * axis=1 (Y/vertical) is the primary scroll axis for the SCROLL
-     * layer. swap-mod lets Shift flip to horizontal scroll on demand
-     * without needing a second layer.
-     *
-     * scale/scale-div (4/675) and the starting decay values are the
-     * module's own documented defaults for a 1000 CPI PMW3610 @ 125Hz --
-     * close to this board's PAW3222 setup. Confirmed working on
-     * hardware (coasts after release). */
+    /* SCROLLレイヤー(J+K)用慣性スクロール設定 */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
 
-        axis  = <1>;   /* Y axis only (vertical) */
-        layer = <5>;   /* SCROLL layer */
+        axis  = <1>;   /* Y軸 (縦スクロール) */
+        layer = <5>;   /* SCROLLレイヤー */
 
         scale     = <4>;
         scale-div = <675>;
 
-        /* Hold Shift to scroll horizontally instead */
-        swap-mod = <(MOD_LSFT|MOD_RSFT)>;
+        swap-mod = <(MOD_LSFT|MOD_RSFT)>; /* Shiftキー保持で横スクロール化 */
     };
 
     trackball_listener: trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
-        /* Default chain (all layers except SCROLL, see scroller_v below):
-         *   deadzone      - filter sub-threshold noise
-         *   xy_transform  - invert both axes (sensor-mounting orientation)
-         *   mouse_runtime - DYA Studio CPI/snipe tuning UI (attached to
-         *                   avoid the Trackball Settings tab crash; not
-         *                   otherwise relied upon -- res-cpi is set at
-         *                   boot on the trackball node below)
-         *   mouse_gesture - active only while K+L combo held; suppresses
-         *                   movement downstream during an active gesture
-         *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
-         *                   excludes J/K/L with 300ms prior-idle requirement
-         *
-         * No inertia on cursor movement -- confirmed not wanted. */
+
+        /* 通常時 (MOUSEレイヤー発動チェイン) */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &mouse_runtime_input_processor
                             &zip_mouse_gesture
-                            &zip_temp_layer 1 1000>;
+                            &zip_temp_layer 1 1000>; /* MOUSEレイヤー(1)へ自動遷移 (1000msタイムアウト) */
 
-        /* SCROLL layer (index5, entered via the J+K combo) override:
-         * same deadzone/orientation/gesture handling, but XY is mapped
-         * to scroll and run through the new inertia processor instead
-         * of mouse_runtime/temp-layer (already intentionally in this
-         * layer). */
+        /* J+K同時押し時 (SCROLLレイヤー: index 5) */
         scroller_v {
             layers = <5>;
             input-processors = <&deadzone_processor
@@ -174,9 +120,6 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        /* Boot-time sensor CPI (counts per inch). Valid range 608-4826 in
-         * steps of 38; driver rounds down. 800 maps to 21*38 = 798.
-         * DYA Studio's runtime-input-processor can override at runtime. */
         res-cpi = <800>;
     };
 };
