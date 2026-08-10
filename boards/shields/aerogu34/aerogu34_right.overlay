@@ -11,9 +11,7 @@
 &xiao_serial { status = "disabled"; };
 &i2c0 { status = "disabled"; };
 
-/* ----------------------------------------------------
- * Mouse Gesture 設定 (K+Lコンボ中に発動)
- * ---------------------------------------------------- */
+/* マウスジェスチャー設定 */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
@@ -21,29 +19,29 @@
 
     forward {
         pattern = <GESTURE_RIGHT>;
-        bindings = <&kp LA(RIGHT_ARROW)>;  /* Alt+Right: 進む */
+        bindings = <&kp LA(RIGHT_ARROW)>;
     };
 
     back {
         pattern = <GESTURE_LEFT>;
-        bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: 戻る */
+        bindings = <&kp LA(LEFT_ARROW)>;
     };
 
     tab_next {
         pattern = <GESTURE_UP>;
-        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: 次のタブ */
+        bindings = <&kp LC(TAB)>;
     };
 
     tab_prev {
         pattern = <GESTURE_DOWN>;
-        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: 前のタブ */
+        bindings = <&kp LS(LC(TAB))>;
     };
 };
 
 / {
-    /* AML (Auto Mouse Layer) プロセッサ定義
-     * J(16), K(17), L(18) 打鍵後300ms以内はマウスレイヤー(1)に遷移しない
-     */
+    /* --- 新規ノード定義はルート / 配下に記述 --- */
+    
+    /* AML Auto Mouse Layer プロセッサ */
     zip_temp_layer: zip_temp_layer {
         compatible = "zmk,input-processor-temp-layer";
         #input-processor-cells = <2>;
@@ -58,31 +56,31 @@
         timeout-ms = <300>;
     };
 
-    /* SCROLLレイヤー(J+K)用慣性スクロール設定 */
+    /* SCROLLレイヤー用 慣性スクロール */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
 
-        axis  = <1>;   /* Y軸 (縦スクロール) */
-        layer = <5>;   /* SCROLLレイヤー */
+        axis  = <1>;
+        layer = <5>;
 
         scale     = <4>;
         scale-div = <675>;
 
-        swap-mod = <(MOD_LSFT|MOD_RSFT)>; /* Shiftキー保持で横スクロール化 */
+        swap-mod = <(MOD_LSFT|MOD_RSFT)>;
     };
 
     trackball_listener: trackball_listener {
         compatible = "zmk,input-listener";
         device = <&trackball>;
 
-        /* 通常時 (MOUSEレイヤー発動チェイン) */
+        /* 通常時のインプットプロセッサ・チェーン */
         input-processors = <&deadzone_processor
                             &zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)
                             &zip_mouse_gesture
-                            &zip_temp_layer 1 1000>; /* MOUSEレイヤー(1)へ自動遷移 (1000msタイムアウト) */
+                            &zip_temp_layer 1 1000>;
 
-        /* J+K同時押し時 (SCROLLレイヤー: index 5) */
+        /* SCROLLレイヤー (Index 5) 適用時 */
         scroller_v {
             layers = <5>;
             input-processors = <&deadzone_processor
