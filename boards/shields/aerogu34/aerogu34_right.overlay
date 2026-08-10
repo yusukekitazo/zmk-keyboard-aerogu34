@@ -9,10 +9,7 @@
 };
 
 &xiao_serial { status = "disabled"; };
-
-/* I2C0およびCDC ACM UARTの重複無効化 */
 &i2c0 { status = "disabled"; };
-&board_cdc_acm_uart { status = "disabled"; };
 
 /* ----------------------------------------------------
  * AML (Auto Mouse Layer) 設定
