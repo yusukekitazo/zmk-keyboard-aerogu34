@@ -12,20 +12,6 @@
 &i2c0 { status = "disabled"; };
 
 /* ----------------------------------------------------
- * AML (Auto Mouse Layer) 設定
- * J(16), K(17), L(18) のキー打鍵後300ms以内は
- * トラックボールを動かしてもMOUSEレイヤーへ遷移しない（誤爆防止）
- * ---------------------------------------------------- */
-&zip_temp_layer {
-    excluded-positions = <
-        16 // J
-        17 // K
-        18 // L
-    >;
-    require-prior-idle-ms = <300>;
-};
-
-/* ----------------------------------------------------
  * Mouse Gesture 設定 (K+Lコンボ中に発動)
  * ---------------------------------------------------- */
 &zip_mouse_gesture {
@@ -55,6 +41,16 @@
 };
 
 / {
+    /* AML (Auto Mouse Layer) プロセッサ定義
+     * J(16), K(17), L(18) 打鍵後300ms以内はマウスレイヤー(1)に遷移しない
+     */
+    zip_temp_layer: zip_temp_layer {
+        compatible = "zmk,input-processor-temp-layer";
+        #input-processor-cells = <2>;
+        excluded-positions = <16 17 18>;
+        require-prior-idle-ms = <300>;
+    };
+
     deadzone_processor: deadzone_processor {
         compatible = "zmk,input-processor-deadzone";
         #input-processor-cells = <0>;
