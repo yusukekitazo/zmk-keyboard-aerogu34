@@ -98,13 +98,24 @@ manifest:
     - name: zmk-feature-os-detection
       remote: cormoran
       revision: main
-    # Diagnostics tab modules -- only the two with confirmed Kconfig in the
-    # developer guide. KSCAN Diagnostics / Devtool / Zephyr Setting Expose
-    # held back until their exact Kconfig names are confirmed.
+    # Diagnostics tab modules (developer guide)
     - name: zmk-feature-device-info
       remote: cormoran
       revision: main
     - name: zmk-feature-watchdog
+      remote: cormoran
+      revision: main
+    - name: zmk-module-devtool
+      remote: cormoran
+      revision: main
+    - name: zmk-feature-kscan-diagnostics
+      remote: cormoran
+      revision: main
+    - name: zmk-feature-zephyr-setting-expose
+      remote: cormoran
+      revision: main
+    # Live key-press visualization for KSCAN Diagnostics web UI
+    - name: zmk-feature-input-stream
       remote: cormoran
       revision: main
   self:
