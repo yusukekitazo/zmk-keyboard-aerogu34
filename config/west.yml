@@ -21,10 +21,7 @@ manifest:
       remote: cormoran
       revision: main+dya
       import: app/west.yml
-    # Zephyr fork required alongside main+dya per developer guide レベル2.
-    # west-commands added: overriding the zephyr project explicitly drops
-    # the implicit west-commands registration that normally comes from
-    # ZMK's own import, breaking "west zephyr-export" -- restored here.
+    # Zephyr fork required alongside main+dya per developer guide レベル2
     - name: zephyr
       remote: cormoran
       revision: v4.1.0+zmk-fixes+nrf-half-duplex-uart
@@ -87,11 +84,27 @@ manifest:
     - name: zmk-feature-fast-keymap
       remote: cormoran
       revision: main
-    # Keymap / Macro / Combo tab modules (developer guide)
+    # Keymap / Macro / Combo tab modules (developer guide) -- confirmed working
     - name: zmk-feature-runtime-macro
       remote: cormoran
       revision: main
     - name: zmk-feature-runtime-combo
+      remote: cormoran
+      revision: main
+    # Connection / OS tab modules (developer guide)
+    - name: zmk-feature-default-layer
+      remote: cormoran
+      revision: codex/custom-rpc-rewrite
+    - name: zmk-feature-os-detection
+      remote: cormoran
+      revision: main
+    # Diagnostics tab modules -- only the two with confirmed Kconfig in the
+    # developer guide. KSCAN Diagnostics / Devtool / Zephyr Setting Expose
+    # held back until their exact Kconfig names are confirmed.
+    - name: zmk-feature-device-info
+      remote: cormoran
+      revision: main
+    - name: zmk-feature-watchdog
       remote: cormoran
       revision: main
   self:
