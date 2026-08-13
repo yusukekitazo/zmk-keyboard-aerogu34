@@ -120,11 +120,18 @@
      * output below ~5Hz feels like discrete "カチッ、カチッ" clicks
      * rather than a smooth coast. Confirmed improved on hardware.
      *
-     * decay-* tuning history: 990 (default) -> 993 (confirmed smoother,
-     * user wanted more) -> 995 (README's upper end of "iOS風の長い滑走
-     * 感: 990-995"). Untested at 995 -- confirm feel after flashing.
-     * If this glides too far now, back off toward 993; the README notes
-     * >995 starts to feel excessive for most setups. */
+     * decay-* raised 990 -> 993 -> 995 (README's upper end for single-
+     * curve "iOS風の長い滑走感"); confirmed no complaints at 995.
+     *
+     * friction dropped from the default 35 to 17 (about half): small/
+     * light flicks were gliding noticeably less than big ones, and
+     * friction specifically shortens small flicks disproportionately
+     * (README's timing table: default 35 cuts a small flick's tail by
+     * ~12% vs ~6% for a big one). Halving it should ease that gap
+     * without going all the way to friction=0 (pure exponential, no
+     * brake at all). Untested -- confirm feel after flashing; go lower
+     * (toward 0) if small flicks still feel short, or back up if they
+     * now overshoot. */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
@@ -139,6 +146,7 @@
         decay-fast = <995>;
         decay-slow = <995>;
         decay-tail = <995>;
+        friction   = <17>;
 
         /* Hold Shift to scroll horizontally instead */
         swap-mod = <(MOD_LSFT|MOD_RSFT)>;
