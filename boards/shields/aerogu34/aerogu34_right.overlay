@@ -111,17 +111,20 @@
      * layer. swap-mod lets Shift flip to horizontal scroll on demand
      * without needing a second layer.
      *
-     * scale/scale-div (4/675) and the starting decay values are the
-     * module's own documented defaults for a 1000 CPI PMW3610 @ 125Hz --
-     * close to this board's PAW3222 setup. Confirmed working on
-     * hardware (coasts after release).
+     * scale/scale-div (4/675) are the module's own documented defaults
+     * for a 1000 CPI PMW3610 @ 125Hz -- close to this board's PAW3222
+     * setup. Confirmed working on hardware (coasts after release).
      *
      * stop raised from the module's default (7, ~5.2Hz cutoff with our
      * scale/scale-div) to 14 (~10Hz) per the README's own guidance:
      * output below ~5Hz feels like discrete "カチッ、カチッ" clicks
-     * rather than a smooth coast, and the fix is to raise stop (lowering
-     * it makes the choppy tail worse, not better). Untested -- confirm
-     * feel after flashing; push higher (e.g. 20) if still choppy. */
+     * rather than a smooth coast. Confirmed improved on hardware.
+     *
+     * decay-* raised from the module's default 990 to 993, per README's
+     * "iOS風の長い滑走感: 990-995" guidance, for a slightly longer/
+     * smoother single-flick coast. Untested -- confirm feel after
+     * flashing; push toward 995 for more glide, or back toward 990 if
+     * it now overshoots. */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
@@ -132,6 +135,10 @@
         scale     = <4>;
         scale-div = <675>;
         stop      = <14>;
+
+        decay-fast = <993>;
+        decay-slow = <993>;
+        decay-tail = <993>;
 
         /* Hold Shift to scroll horizontally instead */
         swap-mod = <(MOD_LSFT|MOD_RSFT)>;
