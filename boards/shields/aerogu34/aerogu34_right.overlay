@@ -30,7 +30,10 @@
  * We only use it for that -- AML stays on the separate zip_temp_layer
  * node (excluded-positions / require-prior-idle-ms aren't supported by
  * mouse_runtime's own temp-layer feature). No overrides needed here;
- * defaults are fine. */
+ * defaults are fine.
+ *
+ * NOTE: touching this node's "Active on Layers" toggle in DYA Studio
+ * has crashed the firmware before -- don't use it. */
 
 /* scroll_runtime_input_processor is NOT used (replaced by scroll_inertia_v
  * below) -- explicitly disabled rather than left unattached. DYA Studio's
@@ -111,7 +114,14 @@
      * scale/scale-div (4/675) and the starting decay values are the
      * module's own documented defaults for a 1000 CPI PMW3610 @ 125Hz --
      * close to this board's PAW3222 setup. Confirmed working on
-     * hardware (coasts after release). */
+     * hardware (coasts after release).
+     *
+     * stop raised from the module's default (7, ~5.2Hz cutoff with our
+     * scale/scale-div) to 14 (~10Hz) per the README's own guidance:
+     * output below ~5Hz feels like discrete "カチッ、カチッ" clicks
+     * rather than a smooth coast, and the fix is to raise stop (lowering
+     * it makes the choppy tail worse, not better). Untested -- confirm
+     * feel after flashing; push higher (e.g. 20) if still choppy. */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
@@ -121,6 +131,7 @@
 
         scale     = <4>;
         scale-div = <675>;
+        stop      = <14>;
 
         /* Hold Shift to scroll horizontally instead */
         swap-mod = <(MOD_LSFT|MOD_RSFT)>;
