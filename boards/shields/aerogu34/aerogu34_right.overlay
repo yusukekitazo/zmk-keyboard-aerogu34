@@ -123,11 +123,12 @@
      * decay-* raised 990 -> 993 -> 995 (README's upper end for single-
      * curve "iOS風の長い滑走感"); confirmed no complaints at 995.
      *
-     * friction tuning history: 35 (default) -> 17 (confirmed improved,
-     * small flicks were gliding much less than big ones) -> 10 (a bit
-     * more still). Untested at 10 -- confirm feel after flashing; keep
-     * dropping toward 0 if still not enough, or back toward 17 if small
-     * flicks start overshooting/feeling uncontrolled. */
+     * friction tuning history: 35 (default) -> 17 (confirmed improved)
+     * -> 10 (confirmed still wanted more) -> 5 (README notes values <=4
+     * get rounded to 0 internally, so 5 is close to the practical floor
+     * without fully disabling the small-flick brake). Untested at 5 --
+     * confirm feel after flashing; if still not enough, the next step
+     * is friction=0 (pure exponential decay, brake fully off). */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
@@ -142,7 +143,7 @@
         decay-fast = <995>;
         decay-slow = <995>;
         decay-tail = <995>;
-        friction   = <10>;
+        friction   = <5>;
 
         /* Hold Shift to scroll horizontally instead */
         swap-mod = <(MOD_LSFT|MOD_RSFT)>;
