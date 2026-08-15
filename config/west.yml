@@ -69,7 +69,7 @@ manifest:
       remote: prospector
       revision: main
       path: modules/prospector-zmk-module
-    # Mouse gesture recognition (K+L combo)
+    # Mouse gesture recognition (J+K+L combo)
     - name: zmk-mouse-gesture
       remote: kot149
       revision: v1
@@ -98,7 +98,7 @@ manifest:
     - name: zmk-feature-os-detection
       remote: cormoran
       revision: main
-    # Diagnostics tab modules (developer guide)
+    # 診断と開発補助タブ (developer guide)
     - name: zmk-feature-device-info
       remote: cormoran
       revision: main
@@ -114,7 +114,6 @@ manifest:
     - name: zmk-feature-zephyr-setting-expose
       remote: cormoran
       revision: main
-    # Live key-press visualization for KSCAN Diagnostics web UI
     - name: zmk-feature-input-stream
       remote: cormoran
       revision: main
