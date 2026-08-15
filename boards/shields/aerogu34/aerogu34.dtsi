@@ -68,6 +68,15 @@
         diode-direction = "col2row";
         wakeup-source;
 
+        /* 新しいキースイッチに交換後、レイヤー3(&lt 3 BACKSPACE)を押し
+         * 続けている最中に接点のチャタリングでホールドが一瞬途切れ、
+         * その隙に押した数字キーが通常レイヤーに落ちてしまう症状の
+         * 対策としてデバウンスを延長。デフォルト(明示なし)から
+         * press/release とも20msに変更。改善しなければさらに上げる、
+         * タイピングにもたつきを感じたら下げる。 */
+        debounce-press-ms = <20>;
+        debounce-release-ms = <20>;
+
         row-gpios
             = <&xiao_d 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
             , <&xiao_d 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
