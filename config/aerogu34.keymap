@@ -330,7 +330,7 @@
         CURSOR1 {
             display-name = "Cursor1";
             bindings = <
-&kp LA(Q)      &kp LA(W)  &kp LEFT_GUI            &kp LA(TAB)              &kp LA(F4)  &kp LC(LS(W))       &kp LC(T)            &kp UP_ARROW    &kp LS(LC(TAB))  &kp LC(TAB)
+&kp LA(Q)      &kp LA(W)  &kp LEFT_GUI            &kp LA(TAB)              &kp LA(F4)  &kp LC(W)           &kp LC(T)            &kp UP_ARROW    &kp LS(LC(TAB))  &kp LC(TAB)
 &kp LG(O)      &kp LG(W)  &kp LG(LC(LEFT_ARROW))  &kp LG(LC(RIGHT_ARROW))  &kp LA(E)   &kp LC(R)           &kp LEFT_ARROW       &kp DOWN_ARROW  &kp RIGHT_ARROW  &kp LC(F)
 &kp LG(SLASH)  &trans     &kp LG(N)               &kp LA(C)                &kp LA(R)   &kp LA(LEFT_ARROW)  &kp LA(RIGHT_ARROW)  &kp LS(LC(B))   &kp RG(A)        &kp LC(L)
 &kp LA(S)      &kp LG(H)                                                               &trans              &trans
