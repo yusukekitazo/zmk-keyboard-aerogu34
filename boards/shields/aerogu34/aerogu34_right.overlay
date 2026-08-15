@@ -62,14 +62,14 @@
     require-prior-idle-ms = <300>;
 };
 
-/* Mouse gesture: activated only while the K+L combo (keymap.keymap) is
+/* Mouse gesture: activated only while the J+K+L combo (keymap.keymap) is
  * held. Movement IS suppressed while active, so gesture strokes don't
  * also move the cursor/scroll underneath. Normal trackball use (no combo
  * held) is completely unaffected.
  *
- * 矢印の向きと一致: 右に転がす→進む、左に転がす→戻る。
- * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。上下のapp-switchは
- * 発火しなかったため、tab切り替えに変更。 */
+ * 左右: 矢印の向きと一致(右に転がす→進む、左に転がす→戻る)、変更なし。
+ * 上下: 1回のジェスチャーで1ティック分スクロール(&msc)。SCROLLレイヤー
+ * の連続・慣性スクロールとは別物の、離散的なスクロールとして併存する。 */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
@@ -85,14 +85,14 @@
         bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
     };
 
-    tab_next {
+    scroll_up {
         pattern = <GESTURE_UP>;
-        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: next tab */
+        bindings = <&msc SCRL_UP>;
     };
 
-    tab_prev {
+    scroll_down {
         pattern = <GESTURE_DOWN>;
-        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: previous tab */
+        bindings = <&msc SCRL_DOWN>;
     };
 };
 
@@ -113,22 +113,15 @@
      *
      * scale/scale-div (4/675) are the module's own documented defaults
      * for a 1000 CPI PMW3610 @ 125Hz -- close to this board's PAW3222
-     * setup. Confirmed working on hardware (coasts after release).
+     * setup. Confirmed working on hardware.
      *
-     * stop raised from the module's default (7, ~5.2Hz cutoff with our
-     * scale/scale-div) to 14 (~10Hz) per the README's own guidance:
-     * output below ~5Hz feels like discrete "カチッ、カチッ" clicks
-     * rather than a smooth coast. Confirmed improved on hardware.
-     *
-     * decay-* raised 990 -> 993 -> 995 (README's upper end for single-
-     * curve "iOS風の長い滑走感"); confirmed no complaints at 995.
-     *
-     * friction tuning history: 35 (default) -> 17 (confirmed improved)
-     * -> 10 (confirmed still wanted more) -> 5 (README notes values <=4
-     * get rounded to 0 internally, so 5 is close to the practical floor
-     * without fully disabling the small-flick brake). Untested at 5 --
-     * confirm feel after flashing; if still not enough, the next step
-     * is friction=0 (pure exponential decay, brake fully off). */
+     * stop=14 (~10Hz cutoff, up from default 7/~5.2Hz -- avoids the
+     * "カチッ、カチッ" discrete feel below ~5Hz per README guidance).
+     * decay-*=995 (README's upper end for single-curve "iOS風の長い
+     * 滑走感"). friction=5 (README's practical floor; lower/lighter
+     * flicks were gliding noticeably less than big ones with the
+     * default 35). All confirmed good on hardware through iterative
+     * tuning. */
     scroll_inertia_v: scroll_inertia_v {
         compatible = "zmk,input-processor-scroll-inertia";
         #input-processor-cells = <0>;
@@ -159,7 +152,7 @@
          *                   avoid the Trackball Settings tab crash; not
          *                   otherwise relied upon -- res-cpi is set at
          *                   boot on the trackball node below)
-         *   mouse_gesture - active only while K+L combo held; suppresses
+         *   mouse_gesture - active only while J+K+L combo held; suppresses
          *                   movement downstream during an active gesture
          *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
          *                   excludes J/K/L with 300ms prior-idle requirement
@@ -173,8 +166,8 @@
 
         /* SCROLL layer (index5, entered via the J+K combo) override:
          * same deadzone/orientation/gesture handling, but XY is mapped
-         * to scroll and run through the new inertia processor instead
-         * of mouse_runtime/temp-layer (already intentionally in this
+         * to scroll and run through the inertia processor instead of
+         * mouse_runtime/temp-layer (already intentionally in this
          * layer). */
         scroller_v {
             layers = <5>;
