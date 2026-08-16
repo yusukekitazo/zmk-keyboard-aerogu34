@@ -5,7 +5,6 @@
 #include <dt-bindings/zmk/runtime_input_processor.h>
 #include <dt-bindings/zmk/input_transform.h>
 #include <dt-bindings/zmk/modifiers.h>
-#include <dt-bindings/zmk/pointing.h>
 #include <mouse-gesture.dtsi>
 
 &default_transform {
@@ -68,9 +67,8 @@
  * also move the cursor/scroll underneath. Normal trackball use (no combo
  * held) is completely unaffected.
  *
- * 左右: 矢印の向きと一致(右に転がす→進む、左に転がす→戻る)、変更なし。
- * 上下: 1回のジェスチャーで1ティック分スクロール(&msc)。SCROLLレイヤー
- * の連続・慣性スクロールとは別物の、離散的なスクロールとして併存する。 */
+ * 矢印の向きと一致: 右に転がす→進む、左に転がす→戻る。
+ * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。 */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
@@ -86,14 +84,14 @@
         bindings = <&kp LA(LEFT_ARROW)>;   /* Alt+Left: back */
     };
 
-    scroll_up {
+    tab_next {
         pattern = <GESTURE_UP>;
-        bindings = <&msc SCRL_UP>;
+        bindings = <&kp LC(TAB)>;          /* Ctrl+Tab: next tab */
     };
 
-    scroll_down {
+    tab_prev {
         pattern = <GESTURE_DOWN>;
-        bindings = <&msc SCRL_DOWN>;
+        bindings = <&kp LS(LC(TAB))>;      /* Ctrl+Shift+Tab: previous tab */
     };
 };
 
