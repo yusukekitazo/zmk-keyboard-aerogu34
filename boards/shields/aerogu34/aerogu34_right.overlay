@@ -68,11 +68,23 @@
  * held) is completely unaffected.
  *
  * 矢印の向きと一致: 右に転がす→進む、左に転がす→戻る。
- * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。 */
+ * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。
+ *
+ * partial-gesture-timeout-ms: upstream kot149/zmk-mouse-gesture PR #13
+ * (jpttm, merged 2026-08-18). Fixes stale partial-stroke accumulation:
+ * a stroke that never reaches stroke-size wasn't being cleared, so it
+ * combined with a later unrelated stroke and produced a wrong-direction
+ * misfire. After 400ms of no movement, the partial accumulation is now
+ * discarded. Author verified reduced left/right misfires on real
+ * hardware (PMW3610); default is 0 (disabled) so this is opt-in.
+ * Untested on our hardware -- confirm feel after flashing; raise if
+ * legitimate multi-stroke gestures start getting cut off mid-way,
+ * lower if stray misfires are still happening. */
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
     suppress-movement;
+    partial-gesture-timeout-ms = <400>;
 
     forward {
         pattern = <GESTURE_RIGHT>;
