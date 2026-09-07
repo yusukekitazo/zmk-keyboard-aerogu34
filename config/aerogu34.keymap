@@ -315,7 +315,7 @@
             bindings = <
 &kp EXCLAMATION       &kp JP_AT             &kp HASH           &kp DOLLAR       &kp PERCENT          &kp JP_CARET       &kp JP_AMPERSAND  &kp JP_ASTERISK  &kp JP_LPAREN    &kp JP_RPAREN
 &kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp LA(PRINTSCREEN)  &kp JP_UNDERSCORE  &kp JP_EQUAL      &kp JP_LBRACKET  &kp JP_RBRACKET  &kp JP_TILDE
-&kp LG(Z)             &kp LC(X)             &kp LC(C)          &kp LC(V)        &kp LS(A)            &kp JP_DQUOTE      &kp JP_COLON      &kp LS(COMMA)    &kp LS(PERIOD)   &kp LS(SLASH)
+&kp LC(Z)             &kp LC(X)             &kp LC(C)          &kp LC(V)        &kp LS(A)            &kp JP_DQUOTE      &kp JP_COLON      &kp LS(COMMA)    &kp LS(PERIOD)   &kp LS(SLASH)
 &trans                &mo 3                                                                          &trans             &trans
             >;
         };
