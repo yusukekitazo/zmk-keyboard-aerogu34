@@ -89,6 +89,11 @@
             timeout-ms = <50>;
             require-prior-idle-ms = <150>;
         };
+
+        capslock {
+            bindings = <&kp CAPSLOCK>;
+            key-positions = <26 27>;
+        };
     };
 
     behaviors {
@@ -287,9 +292,9 @@
         MARK1 {
             display-name = "Mark1";
             bindings = <
-&kp EXCLAMATION       &kp AT                &kp HASH           &kp DOLLAR       &kp PERCENT          &kp CARET          &kp AMPERSAND  &kp ASTERISK     &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
-&kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp LA(PRINTSCREEN)  &kp UNDERSCORE    &kp EQUAL      &kp LEFT_BRACKET &kp RIGHT_BRACKET     &kp TILDE
-&kp LC(Z)             &kp LC(X)             &kp LC(C)          &kp LC(V)        &kp LS(A)            &kp DOUBLE_QUOTES  &kp COLON      &kp LS(COMMA)    &kp LS(PERIOD)        &kp LS(SLASH)
+&kp EXCLAMATION       &kp AT                &kp HASH           &kp DOLLAR       &kp PERCENT          &kp CARET          &kp AMPERSAND  &kp ASTERISK      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
+&kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp LA(PRINTSCREEN)  &kp UNDERSCORE     &kp EQUAL      &kp LEFT_BRACKET  &kp RIGHT_BRACKET     &kp TILDE
+&kp LC(Z)             &kp LC(X)             &kp LC(C)          &kp LC(V)        &kp LS(A)            &kp DOUBLE_QUOTES  &kp COLON      &kp LS(COMMA)     &kp LS(PERIOD)        &kp LS(SLASH)
 &trans                &mo 3                                                                          &trans             &trans
             >;
         };
