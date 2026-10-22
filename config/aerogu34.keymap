@@ -75,17 +75,15 @@
             key-positions = <28 29>;
         };
 
-        /* J+K+L held (3-key combo): activates trackball gesture
-         * recognition. Distinct from the 2-key "scroll" combo (K+L)
-         * above -- ZMK resolves the overlap by waiting up to timeout-ms
-         * for the 3rd key; K+L alone (no J within the window) fires
-         * "scroll", J+K+L fires this instead.
-         * timeout/require-prior-idle mirror the Bt/scroll mode-switch
-         * combos to avoid misfiring while typing normal J/K/L characters. */
+        /* I+O held (2-key combo): activates trackball gesture
+         * recognition. timeout/require-prior-idle mirror the Bt/scroll
+         * mode-switch combos to avoid misfiring while typing normal I/O
+         * characters (the combo only fires if no key was pressed in the
+         * 150ms before). */
 
         mouse_gesture_activate {
             bindings = <&mouse_gesture>;
-            key-positions = <16 17 18>;
+            key-positions = <7 8>;
             timeout-ms = <50>;
             require-prior-idle-ms = <150>;
         };
