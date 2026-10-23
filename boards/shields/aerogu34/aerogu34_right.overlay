@@ -50,24 +50,24 @@
  * typing-misfire prevention. AML layer/timeout are build-time fixed
  * (not Studio-editable) as a result -- confirmed not needed.
  *
- * I/O/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。
- * I/O = ジェスチャー起動コンボ、K/L = MOUSEレイヤーのクリック(MB1/MB2)
- * およびスクロールコンボ(JとK)。
+ * J/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。
+ * J = MOUSEレイヤーの左クリック(MB1)、K = 右クリック(MB2)、
+ * L = ジェスチャー起動(長押し)。J+Kの同時押しはスクロールコンボ。
  * SCROLLレイヤー(下のscroller_v)では意図的にこのAMLを外している
  * (すでにSCROLLレイヤーにいる間はMOUSEレイヤーへ切り替える必要がない)。 */
 &zip_temp_layer {
     excluded-positions = <
         16 // J
         17 // K
-        18 // L 
+        18 // L
     >;
     require-prior-idle-ms = <300>;
 };
 
-/* Mouse gesture: activated only while the I+O combo (keymap.keymap) is
- * held. Movement IS suppressed while active, so gesture strokes don't
- * also move the cursor/scroll underneath. Normal trackball use (no combo
- * held) is completely unaffected.
+/* Mouse gesture: activated only while L is held (hold-tap gesture_l in
+ * keymap.keymap; tapping L still types "l"). Movement IS suppressed while
+ * active, so gesture strokes don't also move the cursor/scroll underneath.
+ * Normal trackball use (L not held) is completely unaffected.
  *
  * 矢印の向きと一致: 右に転がす→進む、左に転がす→戻る。
  * 上下: タブ切り替え(上=次のタブ、下=前のタブ)。
@@ -165,10 +165,10 @@
          *                   avoid the Trackball Settings tab crash; not
          *                   otherwise relied upon -- res-cpi is set at
          *                   boot on the trackball node below)
-         *   mouse_gesture - active only while I+O combo held; suppresses
+         *   mouse_gesture - active only while L is held; suppresses
          *                   movement downstream during an active gesture
          *   temp_layer    - auto-mouse-layer -> MOUSE(1), 1000ms timeout,
-         *                   excludes I/O/K/L with 300ms prior-idle requirement
+         *                   excludes J/K/L with 300ms prior-idle requirement
          *
          * No inertia on cursor movement -- confirmed not wanted. */
         input-processors = <&deadzone_processor
@@ -177,7 +177,7 @@
                             &zip_mouse_gesture
                             &zip_temp_layer 1 1000>;
 
-        /* SCROLL layer (index5, entered via the K+L combo) override:
+        /* SCROLL layer (index5, entered via the J+K combo) override:
          * same deadzone/orientation/gesture handling, but XY is mapped
          * to scroll and run through the inertia processor instead of
          * mouse_runtime/temp-layer (already intentionally in this
