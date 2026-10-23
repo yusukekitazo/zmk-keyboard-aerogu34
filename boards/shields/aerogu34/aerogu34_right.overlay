@@ -52,15 +52,14 @@
  *
  * I/O/K/Lをタイプした直後300ms以内はAMLが発動しない(トラボ誤爆防止)。
  * I/O = ジェスチャー起動コンボ、K/L = MOUSEレイヤーのクリック(MB1/MB2)
- * およびスクロールコンボ(K+L)。
+ * およびスクロールコンボ(JとK)。
  * SCROLLレイヤー(下のscroller_v)では意図的にこのAMLを外している
  * (すでにSCROLLレイヤーにいる間はMOUSEレイヤーへ切り替える必要がない)。 */
 &zip_temp_layer {
     excluded-positions = <
-        7  // I (gesture combo)
-        8  // O (gesture combo)
-        17 // K (MB1)
-        18 // L (MB2)
+        16 // J
+        17 // K
+        18 // L 
     >;
     require-prior-idle-ms = <300>;
 };
