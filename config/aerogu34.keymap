@@ -44,6 +44,7 @@
         };
 
         /* J+K 同時押し: SCROLLレイヤー */
+
         scroll {
             bindings = <&mo 5>;
             key-positions = <16 17>;
@@ -106,6 +107,7 @@
          * 使い方: &gesture_l 0 L  (第1引数は未使用のダミー)
          * require-prior-idle-ms: 直前150ms以内に別キーを打っていたら
          * 必ずタップ扱い(高速タイプ中のLの誤ホールド防止)。 */
+
         gesture_l: gesture_l {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -309,8 +311,8 @@
             bindings = <
 &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp NUMBER_4  &kp N5     &kp NUMBER_6  &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp N0
 &kp F1        &kp F2        &kp F3        &kp F4        &kp F5     &kp F6        &kp F7        &kp F8        &kp F9        &kp F12
-&kp LC(Z)     &kp LC(X)     &kp LC(C)     &kp LC(V)     &kp LS(A)  &trans        &trans        &trans        &trans        &trans
-&trans        &trans                                               &kp INSERT    &kp LC(W)
+&kp LC(Z)     &kp LC(X)     &kp F12       &kp LC(C)     &kp LC(A)  &kp INSERT    &kp CAPSLOCK  &trans        &trans        &trans
+&trans        &trans                                               &kp ESCAPE    &kp F12
             >;
         };
 
