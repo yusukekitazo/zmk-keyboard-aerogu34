@@ -271,6 +271,13 @@
 
             label = "WINDOWSIME";
         };
+
+        td_ime_caps: td_ime_caps {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <150>;
+            bindings = <&windowsime>, <&kp CAPSLOCK>;
+        };
     };
 
     keymap {
@@ -282,7 +289,7 @@
 &kp Q        &kp W            &kp E  &kp R  &kp T  &kp Y        &kp U        &kp I      &kp O           &kp P
 &kp A        &kp S            &kp D  &kp F  &kp G  &kp H        &kp J        &kp K      &gesture_l 0 L  &mt RIGHT_SHIFT MINUS
 &kp Z        &kp X            &kp C  &kp V  &kp B  &kp N        &kp M        &kp COMMA  &kp DOT         &kp SLASH
-&lt 2 SPACE  &lt 3 BACKSPACE                       &lt 4 ENTER  &windowsime
+&lt 2 SPACE  &lt 3 BACKSPACE                       &lt 4 ENTER  &td_ime_caps
             >;
         };
 
